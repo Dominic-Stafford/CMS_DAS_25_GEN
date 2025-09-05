@@ -1,4 +1,4 @@
-# CMS_POSDAS_23_GEN
+# CMS_DAS_25_GEN
 
 ##  Preliminaries
 
@@ -11,8 +11,8 @@ We will first configure a CMSSW release to ensure everyone has a consistent envi
 Create a new directory for this exercise and execute the following commands:
 ```
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-scram p CMSSW_12_5_0
-cd CMSSW_12_5_0/src
+cmsrel CMSSW_14_0_21_patch2
+cd CMSSW_14_0_21_patch2/src
 cmsenv
 ```
 
@@ -33,26 +33,28 @@ cd ../../..
 For the first exercise we will run the standalone madgraph5_aMC@NLO program. 
 Download the program and extract the tarball using these commands:
 ```
-wget https://cms-project-generators.web.cern.ch/cms-project-generators/MG5_aMC_v2.9.13.tar.gz
-tar xf MG5_aMC_v2.9.13.tar.gz
-rm MG5_aMC_v2.9.13.tar.gz
+wget https://cms-project-generators.web.cern.ch/cms-project-generators/MG5_aMC_v2.9.18.tar.gz
+tar xf MG5_aMC_v2.9.18.tar.gz
+rm MG5_aMC_v2.9.18.tar.gz
 ```
 
 ### Installing [pylhe](https://github.com/scikit-hep/pylhe/tree/main)
 
-We will use pylhe to analyse the lhe files produced by Madgraph. This can be simply installed with pip:
+We will use pylhe to analyse the lhe files produced by Madgraph. This can be simply installed with pip, but we recomend first setting up :
 
 ```
-python3 -m pip install --user pylhe
+python3 -m venv gen_ex_env
+source gen_ex_env/bin/activate
+python3 -m pip install pylhe
 ```
 
 ### Mounting a file system
 
-This last step is optional, but will make inspecting the output easier. Provided you are working on a linux machine, you can use ssh to mount the directories on naf on your local machine. To do this run the follow commands in a terminal on your local machine (i.e. without doing an ssh to your school account). You will need to exchange `schoolXX` for your account
+This last step is optional, but will make inspecting the output easier. Provided you are working on a linux machine, you can use ssh to mount the directories on naf on your local machine. To do this run the follow commands in a terminal on your local machine (i.e. without doing an ssh to your school account). You will need to exchange `USERNAME` for your account name and `INITIAL` for the first letter of your username:
 
 ```
-mkdir my_das_school_dir
-sshfs schoolXX@naf-cms.desy.de:/afs/desy.de/user/s/schoolXX my_das_school_dir
+mkdir my_lxplus_afs
+sshfs USERNAME@lxplus.cern.ch:/afs/cern.ch/user/INITIAL/USERNAME my_lxplus_afs
 ```
 
 ## Exercise 1
@@ -107,7 +109,7 @@ launch
 ```
 
 
-You will then see some switches for additional options, which can be left off for now. Then you will get the option to edit the cards which control the run: open these in turn (by default MG5_aMC will open these with vim, after you've finished looking enter :quit! to exit without saving). The param card contains the parameters for the currently used physics model- by default this contains all of the SM interactions. The proc card contains speicfic cuts and other settings for madgraph when running. After you have looked at these cards, MG5_aMC will compile some code to compute the process, then generate some events (by default 10000).
+You will then see some switches for additional options, which can be left off for now. Then you will get the option to edit the cards which control the run: open these in turn (by default MG5_aMC will open these with EMACs, after you've finished looking enter Ctrl+X, then N, to exit without saving). The param card contains the parameters for the currently used physics model- by default this contains all of the SM interactions. The proc card contains speicfic cuts and other settings for madgraph when running. After you have looked at these cards, MG5_aMC will compile some code to compute the process, then generate some events (by default 10000).
 
 A folder called LO_ttbar will be created in the MG5_aMC_v2_9_13 directory, containing all of the information from this run. If you managed to mount your file system as described in the preliminaries, you can navigate to this directory and open `index.html` with your web browser, which gives an overview of the information. Clicking on "Process Information " shows the information about the different sub-processes considered, including the corresponding Feynmann diagrams. Clicking on "Results and Event Database" then "LHE" will point to the  file containing the generated events in Les Houches Event format. If you are unable to open the html file, you can instead unzip the lhe file and view it in the terminal:
 
@@ -156,20 +158,18 @@ In CMSSW generation (and most other processes) is controlled by python configura
 
 ```
 cd /PATH/TO/CMSSW_12_4_14_patch2/src
-mkdir Configuration
-mkdir Configuration/GenProduction
-mkdir Configuration/GenProduction/python
-cp /PATH/TO/CMS_POSDAS_23_GEN/Fragments/external_lhe_cff.py Configuration/GenProduction/python
+mkdir -p Configuration/GenProduction/python
+cp /PATH/TO/CMS_DAS_25_GEN/Fragments/external_lhe_cff.py Configuration/GenProduction/python
 scram b -j 4
 ```
 
 The command that converts fragments to full configurations is cmsDriver.py this has many options, however generally one can take a pre-existing command from a previous generator request in the same campaign, so does not need to memorise all the options. For this tutorial run the following command:
 
 ```
-cmsDriver.py Configuration/GenProduction/python/external_lhe_cff.py --python_filename external_lhe_cfg.py --eventcontent RAWSIM,NANOAODGEN --datatier GEN,NANOAOD --filein file:PATH/TO/YOUR/unweighted_events.lhe --fileout file:ttbar.root --conditions 106X_upgrade2018_realistic_v4 --beamspot Realistic25ns13TeVEarly2018Collision --step GEN,NANOGEN --geometry DB:Extended --era Run2_2018 --no_exec --mc --customise_commands process.MessageLogger.cerr.FwkReport.reportEvery="int(1000)" -n 5000
+cmsDriver.py Configuration/GenProduction/python/external_lhe_cff.py --python_filename external_lhe_cfg.py --eventcontent RAWSIM,NANOAODGEN --datatier GEN,NANOAOD --filein file:PATH/TO/YOUR/unweighted_events.lhe --fileout file:ttbar.root --conditions 140X_mcRun3_2024_realistic_v26 --beamspot DBrealistic --step GEN,NANOGEN --geometry DB:Extended --era Run3_2024 --no_exec --mc --customise_commands process.MessageLogger.cerr.FwkReport.reportEvery="int(1000)" -n 5000
 ```
 
-One can then run the config thus produced using the following command:
+You will need to change `PATH/TO/YOUR/unweighted_events.lhe` to point to your file; you can either do this in the above command, or afterwards open the generated `external_lhe_cfg.py` and replace this in the LHESource. One can then run the config thus produced using the following command:
 
 ```
 cmsRun external_lhe_cfg.py
@@ -179,7 +179,7 @@ By default, pythia produces events in the HEPMC format. We provide an example of
 
 The command you have just run further converts this to nanoGEN, a format similar to nanoAOD containing only generator information. You can try opening `ttbar_inNANOAODGEN.root` with either ROOT or uproot - you can find the pdgIds of the generated particles in the "GenPart_pdgId" branch of the "Events" tree, see what other properties you can find.
 
-However for this exercise we will not attempt to perform an anlysis directly on this file, but instead look at the output of some analyses implemented in rivet which we included in the fragment.  We will cover how to make your own rivet analysis in section 3, but for now you can look at the output of the pre-defined ones, which include some unfolded data from previous anlyses. cmsRun will have produced a rivetfile called `ttbar_external_lhe.yoda` containing all of the output histograms from these analyses, which one can plot with the following command:
+However for this exercise we will not attempt to perform an analysis directly on this file, but instead look at the output of some analyses implemented in rivet which we included in the fragment.  We will cover how to make your own rivet analysis in section 3, but for now you can look at the output of the pre-defined ones, which include some unfolded data from previous anlyses. cmsRun will have produced a rivetfile called `ttbar_external_lhe.yoda` containing all of the output histograms from these analyses, which one can plot with the following command:
 
 ```
 rivet-mkhtml --mc-errs ttbar_external_lhe.yoda
@@ -189,37 +189,37 @@ This will produce a directory called `rivet-plots`. If you managed to mount the 
 
 #### Extensions:
 
-Pythia does a lot of steps to convert the hard process to a full event: a parton shower is run to simulate additional emissions (which can be separated into final state radiation (FSR), which leads to the formation of jets, and inital state radiation (ISR), which tends to produce additional jets), then the event is hadronised to turn the coloured particles into colourless hadrons, then the unstable hadrons are decayed. Additional interactions are also simulated due to the interaction of other partons in the colliding protons (multi-parton interactions, MPI). The best way to get a feel for these is to turn these off sequentially and look at the impact on the rivet analyses. In the `parameterSets` section of your `external_lhe_cfg.py` uncomment `processParameters` to allow additional options. You can then uncomment each of the lines in your `processParameters` block to turn each step off and rerun with `cmsRun` for each. You will also need to change the `OutputFile` argument of the `rivetAnalyzer` to save the histograms in a different file each time. To better compare, one can plot multiple rivet analyses on the same axes:
+Pythia does a lot of steps to convert the hard process to a full event: a parton shower is run to simulate additional emissions (which can be separated into final state radiation (FSR), which leads to the formation of jets, and inital state radiation (ISR), which tends to produce additional jets), then the event is hadronised to turn the coloured particles into colourless hadrons, then the unstable hadrons are decayed. Additional interactions are also simulated due to the interaction of other partons in the colliding protons (multi-parton interactions, MPI). The best way to get a feel for these is to turn these off sequentially and look at the impact on the rivet analyses (note the MPI is already switched off- you can try switching this onn, but you will most likely find this runs significantly slower- can you guess why?). In the `parameterSets` section of your `external_lhe_cfg.py` uncomment `processParameters` to allow additional options. You can then uncomment each of the lines in your `processParameters` block to turn each step off and rerun with `cmsRun` for each. You will also need to change the `OutputFile` argument of the `rivetAnalyzer` to save the histograms in a different file each time. To better compare, one can plot multiple rivet analyses on the same axes:
 
 ```
-rivet-mkhtml --mc-errs ttbar_external_lhe.yoda MPI_off.yoda
+rivet-mkhtml --mc-errs ttbar_external_lhe.yoda hadronisation_off.yoda
 ```
 
-Feel free to discuss your outputs with the Facilators to understand the impact of each step.
+Feel free to discuss your outputs with the facilators to understand the impact of each step.
 
 ## Exercise 2: Generating gridpacks
 
-While running madgraph interactively is useful for smaller tests, it is rather cumbersome for large scale production, since the intial set-up would have to be repeated in each job. In CMS we therefore use "gridpacks", which are tarballs containing all of the information necessary to generate events. These can be produced using the [CMS genproductions repository](https://github.com/cms-sw/genproductions/tree/master), which contains cards for all of the different physics processes in CMS, and the code to make gridpacks of these for different generators. However since this is a very large repository, we will use a [lightweight version](https://github.com/Dominic-Stafford/POSDAS23_genproductions) for this exercise. In a new terminal session (without CMSSW active) check out this repository and navigate to the madgraph directory:
+While running madgraph interactively is useful for smaller tests, it is rather cumbersome for large scale production, since the intial set-up would have to be repeated in each job. In CMS we therefore use "gridpacks", which are tarballs containing all of the information necessary to generate events. These can be produced using the [CMS genproductions scripts repository](https://gitlab.cern.ch/cms-gen/genproductions_scripts). Cards for official requests are stored in [genproductions cards](https://gitlab.cern.ch/cms-gen/genproductions_cards) so that they can be adapted and used by future analyses, however for this exercise we will just use example cards from this repository. In a new terminal session (without CMSSW active) check out this repository and navigate to the madgraph directory:
 
 ```
 source /cvmfs/grid.desy.de/etc/profile.d/grid-ui-env.sh
-git clone https://github.com/Dominic-Stafford/POSDAS23_genproductions.git
-cd POSDAS23_genproductions/bin/MadGraph5_aMCatNLO
+git clone ssh://git@gitlab.cern.ch:7999/cms-gen/genproductions_scripts.git
+cd genproductions_scripts/bin/MadGraph5_aMCatNLO
 ```
 
-We have already provided cards for ttbar production in [cards/examples/ttbar_LO](https://github.com/Dominic-Stafford/POSDAS23_genproductions/tree/master/bin/MadGraph5_aMCatNLO/cards/examples/ttbar_LO). These are the same as the run and proc cards you generated in the first section. To make a gridpack from these cards, execute the following command:
+We have already provided cards for ttbar production in [cards/ttbar_LO](cards/ttbar_LO). These are the same as the run and proc cards you generated in the first section. To make a gridpack from these cards, execute the following command:
 
 ```
-./gridpack_generation.sh ttbar_LO cards/examples/ttbar_LO
+./gridpack_generation.sh ttbar_LO PATH/TO/CMS_DAS_25_GEN/cards/ttbar_LO
 ```
 
 This will generate the feynmann diagrams, code and integration grid to produce events, perform a test run and then store all necessary files in a tarball. One can then generate lhe events from this gridpack within CMSSW using the externalLHEProducer class. We provide a fragment to do this and shower the event with pythia in [Fragments/gridpack_cff.py](Fragments/gridpack_cff.py). Open this and change the path on line 10 to point to the gridpack you just created. Then in your first terminal session (with the CMSSW environment set up) copy this to your CMSSW release, use cmsDriver to produce a cfg and run it:
 
 ```
-cd /PATH/TO/CMSSW_12_4_14_patch2/src
-cp /PATH/TO/CMS_POSDAS_23_GEN/Fragments/gridpack_cff.py Configuration/GenProduction/python
+cd /PATH/TO/CMSSW_14_0_21_patch2/src
+cp /PATH/TO/CMS_DAS_25_GEN/Fragments/gridpack_cff.py Configuration/GenProduction/python
 scram b -j 4
-cmsDriver.py Configuration/GenProduction/python/gridpack_cff.py --python_filename gridpack_cfg.py --eventcontent RAWSIM,LHE --datatier GEN,LHE --fileout file:ttbar_1j.root --conditions 106X_upgrade2018_realistic_v4 --beamspot Realistic25ns13TeVEarly2018Collision --step LHE,GEN --geometry DB:Extended --era Run2_2018 --no_exec --mc --customise_commands process.MessageLogger.cerr.FwkReport.reportEvery="int(1000)" -n 5000
+cmsDriver.py Configuration/GenProduction/python/gridpack_cff.py --python_filename gridpack_cfg.py --eventcontent RAWSIM,LHE,NANOAODGEN --datatier GEN,LHE,NANOAOD --fileout file:ttbar_gridpack.root --conditions 140X_mcRun3_2024_realistic_v26 --beamspot DBrealistic --step LHE,GEN,NANOGEN --geometry DB:Extended --era Run3_2024 --no_exec --mc --customise_commands process.MessageLogger.cerr.FwkReport.reportEvery="int(1000)" -n 5000
 cmsRun gridpack_cfg.py
 ```
 
@@ -231,16 +231,16 @@ rivet-mkhtml --mc-errs ttbar_gridpack.yoda ttbar_external_lhe.yoda
 
 #### Extensions:
 
-- To get a higher accuracy, one can simulate ttbar at next-to-leading order (NLO) with Madgraph. We provide the cards for this in `cards/examples/ttbar_NLO` have a look at these cards, produce a gridpack from them and shower this with pythia. How do the rivet plots compare to the LO ones?
+- To get a higher accuracy, one can simulate ttbar at next-to-leading order (NLO) with Madgraph. We provide the cards for this in `cards/ttbar_NLO` have a look at these cards, produce a gridpack from them and shower this with pythia. How do the rivet plots compare to the LO ones?
 
-- An alternative to producing full higher order predictions is to produce events at leading order with additional jets in madgraph, which can capture some of the higher order effect. Commonly this is done with up to four additional jets, however to have a reasonably quick example for this exercise we provide cards for ttbar with up to 1 additional jet in `cards/examples/tt1j_mlm`. This can lead to some double counting with the parton shower emmissions in Pythia, so we need to tell Pythia to remove this double counting. This can be done with the [Fragments/gridpack_mlm_cff.py](Fragments/gridpack_mlm_cff.py) fragment. How do these predictions compare to NLO and LO without additional emissions?
+- An alternative to producing full higher order predictions is to produce events at leading order with additional jets in madgraph, which can capture some of the higher order effect. Commonly this is done with up to four additional jets, however to have a reasonably quick example for this exercise we provide cards for ttbar with up to 1 additional jet in `cards/tt1j_mlm`. This can lead to some double counting with the parton shower emmissions in Pythia, so we need to tell Pythia to remove this double counting. This can be done with the [Fragments/gridpack_mlm_cff.py](Fragments/gridpack_mlm_cff.py) fragment. How do these predictions compare to NLO and LO without additional emissions?
 
 ## Exercise 3: Modify rivet routines
 Rivet is a system for validation of Monte Carlo event generators that provides a large set of experimental analysis. It contains most of the LHC and other high-energy colliders experiments code which is preserved for comparison and develompent of future therory models. In this exercise we will use CMS_2016_I1491950 and will modify to add the number of jets and jet pt doing:
 ```
-vim CMSSW_12_5_0/src/Rivet/TOP/src/CMS_2016_I1491950.cc
+vim CMSSW_14_0_21_patch2/src/Rivet/TOP/src/CMS_2016_I1491950.cc
 ```
-and will book  the histograms inside `void init() {}` as:
+(or using another text editor of you choice) and will book  the histograms inside `void init() {}` as:
 
 ```
     //book hists
@@ -285,7 +285,7 @@ Then at the very end one needs to declare the histograms as:
 
 ```
 
-Then inside  `CMSSW_12_5_0/src/Rivet` do `scram b -j8` to compile the rivet routine. 
+Then inside  `CMSSW_14_0_21_patch2/src/Rivet` do `scram b -j8` to compile the rivet routine. 
 
 One then needs to rerun the CMSSW routine which generates events and runs the new analysis, then re-plot the outputs:
 

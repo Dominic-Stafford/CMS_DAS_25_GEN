@@ -7,7 +7,7 @@ externalLHEProducer = cms.EDProducer('ExternalLHEProducer',
   scriptName = cms.FileInPath("GeneratorInterface/LHEInterface/data/run_generic_tarball_cvmfs.sh"),
   outputFile = cms.string("cmsgrid_final.lhe"),
   numberOfParameters = cms.uint32(1),
-  args = cms.vstring('/path/to/POSDAS23_genproductions/bin/MadGraph5_aMCatNLO/ttbar_LO_slc7_amd64_gcc900_CMSSW_12_0_2_tarball.tar.xz'),
+  args = cms.vstring('/path/to/genproductions_scripts/bin/MadGraph5_aMCatNLO/tt1j_mlm_el9_amd64_gcc11_CMSSW_13_2_9_tarball.tar.xz'),
   nEvents = cms.untracked.uint32(10000)
 )
 
