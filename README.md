@@ -16,7 +16,7 @@ cd CMSSW_14_0_21_patch2/src
 cmsenv
 ```
 
-### Setting up [Rivet in CMSSW](https://twiki.cern.ch/twiki/bin/view/CMS/Rivet#Setting_Rivet_in_CMSSW)
+### Setting up [Rivet in CMSSW](https://cms-rivet-info.docs.cern.ch/)
 
 We will use the [Rivet](https://rivet.hepforge.org/) program to analyse events. 
 Rivet can be run from within CMSSW. To set it up run the following commands:
@@ -24,6 +24,7 @@ Rivet can be run from within CMSSW. To set it up run the following commands:
 ```
 git clone https://gitlab.cern.ch/cms-gen/Rivet.git
 cd Rivet
+git checkout master-rivet3
 source rivetSetup.sh
 scram b -j8
 cd ../../..
