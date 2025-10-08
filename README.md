@@ -158,7 +158,7 @@ The three main parton shower programs are Pythia8, Herwig and Sherpa, which diff
 In CMSSW generation (and most other processes) is controlled by python configuration files, which typically end in `cfg.py`. These contain all of the options required to produce events, including generator information and information related to the specific year being produced. To ensure portability of processes between years, the generator information is factorised into a more light weight format called a "fragment", which typically end in `cff.py`. We have provided one such simple fragment designed to shower a LO madgraph lhe file with pythia in [Fragments/external_lhe_cff.py](Fragments/external_lhe_cff.py). This imports a set of common settings and the dedicated CMS UE Tune, CP5. To turn this fragment into a full configuration file that can produce events, one must first put it in a specific place within CMSSW, and recompile so CMSSW knows where to find it:
 
 ```
-cd /PATH/TO/CMSSW_12_4_14_patch2/src
+cd /PATH/TO/CMSSW_14_0_21_patch2/src
 mkdir -p Configuration/GenProduction/python
 cp /PATH/TO/CMS_DAS_25_GEN/Fragments/external_lhe_cff.py Configuration/GenProduction/python
 scram b -j 4
