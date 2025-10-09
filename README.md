@@ -79,6 +79,7 @@ https://indico.cern.ch/event/555228/sessions/203428/attachments/1315471/1970459/
 MG5_aMC comes with an interactive shell, which is very helpful for learning the syntax of the commands. To start this, type:
 
 ```
+cd /PATH/TO/MG5_aMC_v2_9_18
 ./bin/mg5_aMC
 ```
 
@@ -122,7 +123,7 @@ less LO_ttbar/Events/run_01/unweighted_events.lhe
 Looking at the file, the first lines contains the log of the commands in the madgraph console and copies of the run, proc and automatically generated param cards used in the run (keeping a record of the settings used together with the generated run). After this there is some general information enclosed in an <init>...<\init> block, then each event is in its own block, enclosed by <event>...</event> tags. The first line contains general information about the event, then there is one line per particle, after which comes some reweighting information, enclosed in <mgrwt>...</mgrwt> tags, which can be used for a number purposes, including evaluating the effect of pdf variations. This is a standardised format used by all matrix element generators, documented [here](https://arxiv.org/abs/hep-ph/0609017) or in a somewhat more inteligible format [here](https://hugonweb.com/lheref/). This is obviously not the easiest format to read, however a number of packages are available to process this. We have provided a script to read this and produce some plots of different distibutions [scripts/plot_lhe.py](scripts/plot_lhe.py). Run this script:
 
 ```
-python3 scripts/plot_lhe.py path/to/your/mgdir/LO_ttbar/Events/run_01/unweighted_events.lhe.gz lhe_plots
+python3 scripts/plot_lhe.py path/to/your/mgdir/LO_ttbar/Events/run_01/unweighted_events.lhe lhe_plots
 ```
 
 This will produce plots of the mass and transverse momentum, $p_T$, of each of the tops, as well as the invariant mass of the top-quark pair, $t\bar{t}$, system. Try modifying the script to also produce the $p_T$ of the $t\bar{t}$ system. Have a look at the plots. Are these what you would expect? 
