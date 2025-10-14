@@ -3,12 +3,19 @@
 ##  Preliminaries
 
 ### Introductory slides
-[POSDAS-generators](https://indico.desy.de/event/38207/contributions/152486/attachments/85932/114250/POSDAS-generators.pdf)
+[POSDAS-generators](https://indico.cern.ch/event/1522042/sessions/625886/attachments/3152793/5599089/CMS_DAS_GEN_2025.pdf)
+If working through this exercise after a session, feel free to drop an email to dominic.william.stafford AT cern.ch with questions!
+
+### Clone this repository
+
+We recommend making a new directory to contain this exercise and moving into it. Then clone this repository (note this assumes you have [set up an ssh key](https://cmsdas-hamburg-2025-pre-exercises.docs.cern.ch/git/)):
+```
+git clone ssh://git@gitlab.cern.ch:7999/cmsdas-hamburg-2025/generator-short-excercise.git CMS_DAS_25_GEN
+```
 
 ###  Setting up [CMSSW](https://github.com/cms-sw/cmssw) 
 
-We will first configure a CMSSW release to ensure everyone has a consistent environment and set of enviroment variables. 
-Create a new directory for this exercise and execute the following commands:
+We will configure a CMSSW release to ensure everyone has a consistent environment and set of enviroment variables:
 ```
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 cmsrel CMSSW_14_0_21_patch2
