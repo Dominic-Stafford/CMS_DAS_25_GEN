@@ -49,9 +49,20 @@ source gen_ex_env/bin/activate
 python3 -m pip install pylhe
 ```
 
+### After the first login
+
+If your ssh session drops/freezes after the install, you only need to rerun `cmsenv` and source the python env, i.e.:
+
+```
+cd CMSSW_14_0_21_patch2/src
+cmsenv
+cd ..
+source gen_ex_env/bin/activate
+```
+
 ### Mounting a file system
 
-This last step is optional, but will make inspecting the output easier. Provided you are working on a linux machine, you can use ssh to mount the directories on naf on your local machine. To do this run the follow commands in a terminal on your local machine (i.e. without doing an ssh to your school account). You will need to exchange `USERNAME` for your account name and `INITIAL` for the first letter of your username:
+This last step is optional (for instance not so important if you use VSCode), but will make inspecting the output easier. Provided you are working on a linux machine, you can use ssh to mount the directories on lxplus on your local machine. To do this run the follow commands in a terminal on your local machine (i.e. without doing an ssh to your school account). You will need to exchange `USERNAME` for your account name and `INITIAL` for the first letter of your username:
 
 ```
 mkdir my_lxplus_afs
@@ -204,7 +215,6 @@ Feel free to discuss your outputs with the facilators to understand the impact o
 While running madgraph interactively is useful for smaller tests, it is rather cumbersome for large scale production, since the intial set-up would have to be repeated in each job. In CMS we therefore use "gridpacks", which are tarballs containing all of the information necessary to generate events. These can be produced using the [CMS genproductions scripts repository](https://gitlab.cern.ch/cms-gen/genproductions_scripts). Cards for official requests are stored in [genproductions cards](https://gitlab.cern.ch/cms-gen/genproductions_cards) so that they can be adapted and used by future analyses, however for this exercise we will just use example cards from this repository. In a new terminal session (without CMSSW active) check out this repository and navigate to the madgraph directory:
 
 ```
-source /cvmfs/grid.desy.de/etc/profile.d/grid-ui-env.sh
 git clone ssh://git@gitlab.cern.ch:7999/cms-gen/genproductions_scripts.git
 cd genproductions_scripts/bin/MadGraph5_aMCatNLO
 ```
